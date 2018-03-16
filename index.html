@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Draw geometries</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.5/esri/css/main.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/dojo/1.13.0/dojo/dojo.js"></script> -->
+    <script src="https://js.arcgis.com/4.5/"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script><!--  -->
+    <style>
+
+         * {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        }
+        body
+        {
+        /*padding: 30px;*/
+        background: radial-gradient(circle farthest-corner at 200px 0, #004141, #000) no-repeat center center fixed;	
+        }
+        #viewDiv
+        {
+        margin: 1em auto;
+        width: 1000px;
+        height: 600px;
+        background-color: #ccc;
+        border-radius: 3px;
+        display: block;
+        }
+
+        #my_div {
+        width: 1000px;
+        height: 60px;
+        margin: 0 auto;
+        }
+
+        #flex_container > p {
+        display: inline-block;
+        margin-top: 1em;
+        }
+
+        #flex_container {
+        display: flex;/**/
+        justify-content: space-between;
+        align-items: flex-start;
+        }     
+
+        .esri-basemap-gallery {
+        display: none;
+        }/**/
+
+        .colorPicker {
+        margin-top: 1.1em;
+        font-size: 0.875em;
+        text-align: center;
+        /*display: inline-block;*/
+        width: 100%;
+        max-width: 30em;
+        background: #000;
+        padding: 0.5em;
+        border-radius: 0.35em;
+        -webkit-box-shadow: 0 0.5em 1.5em rgba(0,0,0,0.15);
+        box-shadow: 0 0.5em 1.5em rgba(0,0,0,0.15);/**/
+        }
+        .colorPicker label {
+        -webkit-tap-highlight-color: rgba(255,255,255,0.5);
+        -webkit-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        display: table-cell;/**/
+        cursor: pointer;
+        vertical-align: middle;
+        padding: 0.5em 1em;
+        text-transform: capitalize;
+        letter-spacing: -0.5em;
+        color: transparent;
+        opacity: 0.6;
+        width: 1%;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,0.1)), to(rgba(0,0,0,0.1)));
+        background-image: linear-gradient(rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+        }
+        .colorPicker label.red {
+        background-color: #ff3e05;
+        -webkit-tap-highlight-color: #ff3e05;
+        }
+        .colorPicker label.orange {
+        background-color: #ff8d05;
+        -webkit-tap-highlight-color: #ff8d05;
+        }
+        .colorPicker label.yellow {
+        background-color: #ecca05;
+        -webkit-tap-highlight-color: #ecca05;
+        }
+        .colorPicker label.green {
+        background-color: #40af04;
+        -webkit-tap-highlight-color: #40af04;
+        }
+        .colorPicker label.blue {
+        background-color: #057fff;
+        -webkit-tap-highlight-color: #057fff;
+        }
+        .colorPicker label.indigo {
+        background-color: #7500ca;
+        -webkit-tap-highlight-color: #7500ca;
+        }
+        .colorPicker label.violet {
+        background-color: #cc6fcc;
+        -webkit-tap-highlight-color: #cc6fcc;
+        }
+        .colorPicker label:first-of-type {
+        border-radius: 0.25em 0 0 0.25em;
+        }
+        .colorPicker label:last-of-type {
+        border-radius: 0 0.25em 0.25em 0;
+        }
+
+        .colorPicker label:hover {
+        opacity: 1;
+        color: #fff;
+        letter-spacing: normal;
+        }
+        .colorPicker input {
+        display: none;
+        }
+        .colorPicker input:checked + label {
+        /*width: 40%;*/
+        opacity: 1;
+        color: #fff;
+        letter-spacing: normal;
+        }
+
+    </style>
+</head>
+
+<body>
+   <div id="my_div">
+    <div id="flex_container">
+            <p><button id="toggle_btn" class="btn btn-primary">Basemap Gallery</button></p>
+            <p><button id="draw_point" class="btn btn-primary">Draw point at center view</button></p>
+        <div class="colorPicker">
+                <input class="red" type="radio" name="hat-color" value="red" id="hat-color-red"/>
+                <label class="red" for="hat-color-red">red</label>
+                <input class="orange" type="radio" name="hat-color" value="orange" id="hat-color-orange"/>
+                <label class="orange" for="hat-color-orange">orange</label>
+                <input class="yellow" type="radio" name="hat-color" value="yellow" id="hat-color-yellow"/>
+                <label class="yellow" for="hat-color-yellow">yellow</label>
+                <input class="green" type="radio" name="hat-color" value="green" id="hat-color-green"/>
+                <label class="green" for="hat-color-green">green</label>
+                <input class="blue" type="radio" name="hat-color" value="blue" id="hat-color-blue"/>
+                <label class="blue" for="hat-color-blue">blue</label>
+                <input class="indigo" type="radio" name="hat-color" value="indigo" id="hat-color-indigo"/>
+                <label class="indigo" for="hat-color-indigo">indigo</label>
+                <input class="violet" type="radio" name="hat-color" value="violet" id="hat-color-violet"/>
+                <label class="violet" for="hat-color-violet">violet</label>
+            </div>
+        </div>
+    </div>
+   <div id="viewDiv"></div>
+</body>
+<script>
+    let map, view;
+    let basemaps = ["streets", "satellite", "hybrid", "topo", "gray", "dark-gray", "osm",
+                    "dark-gray-vector", "gray-vector","streets-vector", "topo-vector",
+                    "streets-night-vector", "streets-relief-vector", "streets-navigation-vector"]
+    let toggleBtn, basemapGlly;
+    let Graphic;
+    let drawPointBtn = document.querySelector("#draw_point");
+    let color = "red";
+
+    require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/widgets/BasemapGallery",
+    "esri/Graphic",
+    "dojo/domReady!"
+    ], function(Map, MapView, BasemapGallery, GraphicClass) {
+
+    Graphic = GraphicClass;
+
+    map = new Map({
+        basemap: basemaps[5]
+    });
+
+    view = new MapView({
+        container: "viewDiv",  // Reference to the DOM node that will contain the view
+        map: map,              // References the map object created in step 3
+        zoom: 2
+    });
+
+    let basemapGallery = new BasemapGallery({
+        view: view
+    });
+
+    // Add the widget to the top-right corner of the view
+    view.ui.add(basemapGallery, {
+        position: "top-right"
+    });
+
+    drawPointBtn.onclick = function() {
+        let x = view.center.longitude;
+        let y = view.center.latitude;
+        drawPoint(x,y,color);
+    }   
+    
+    view.on("click", function (event) {
+        let x = event.mapPoint.longitude;
+        let y = event.mapPoint.latitude;
+        //console.log("x = " + x);
+        //console.log("y = " + y);
+        drawPoint(x,y,color);
+    })
+
+    $( document ).ready(function() {
+
+        toggleBtn = $("#toggle_btn");
+
+        basemapGlly = $(".esri-basemap-gallery");
+        toggleBtn.click(function() {
+        basemapGlly.toggle("slow");
+        })
+
+        let colors = $(".colorPicker input");
+        colors.each(function() {
+        $(this).click(function(){
+            color = $(this).attr("value");
+            //console.log(color);
+        })
+        })
+
+
+    });   
+
+
+    });
+
+    function drawPoint(x,y,color) {
+
+    let pt = {
+        type: "point",
+        longitude: x,
+        latitude: y
+    }
+
+    let s = {
+        type: "simple-marker",
+        color: color,
+    }
+
+    let graphic = new Graphic({geometry: pt, symbol: s});
+    view.graphics.add(graphic);
+    }/* */
+
+    function drawLine(x1, y1, x2, y2){
+
+    }
+
+    function drawLine(x1, y1, x2, y2, x3, y32){
+
+    }
+    
+</script>
+</html>
